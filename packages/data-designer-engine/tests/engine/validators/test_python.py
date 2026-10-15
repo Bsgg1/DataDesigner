@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import tempfile
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
@@ -92,7 +93,7 @@ def test_validate_files_in_path(fixture_python_validator, fixture_bad_code_str, 
         "x = 1 +\n",
     ],
 )
-def test_validate_malformed_python(fixture_python_validator, malformed_code):
+def test_validate_malformed_python(fixture_python_validator: PythonValidator, malformed_code: str) -> None:
     result = fixture_python_validator.run_validation([{"code": malformed_code}])
 
     assert result.data[0].is_valid is False
@@ -108,7 +109,9 @@ def test_validate_malformed_python(fixture_python_validator, malformed_code):
     [None, "invalid-syntax", "E999", "SyntaxError"],
     ids=["none-code", "ruff-syntax-code", "legacy-ruff-syntax-code", "pylint-syntax-code"],
 )
-def test_run_linter_classifies_syntax_diagnostics(tmp_path, monkeypatch, diagnostic_code):
+def test_run_linter_classifies_syntax_diagnostics(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, diagnostic_code: str | None
+) -> None:
     code_file = tmp_path / "module.py"
     code_file.write_text("pass\n")
 
